@@ -1,0 +1,469 @@
+// Prisma Database Schema for HamroSewa Marketplace
+// This file defines all database tables and relationships
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== USER MODELS ====================
+
+// User model - Base user entity for all users
+model User {
+  id                    String    @id @default(cuid())
+  email                 String    @unique
+  password              String?
+  firstName             String?
+  lastName              String?
+  phoneNumber           String?
+  profileImage          String?   // Cloudinary URL
+  bio                   String?
+  
+  // Authentication
+  emailVerified         Boolean   @default(false)
+  emailVerificationToken String?
+  
+  // OAuth
+  googleId              String?   @unique
+  facebookId            String?   @unique
+  
+  // Account status
+  role                  UserRole  @default(USER)
+  isSuspended           Boolean   @default(false)
+  suspendedReason       String?
+  suspendedUntil        DateTime?
+  
+  // Preferences
+  language              String    @default("en")
+  notifications         Boolean   @default(true)
+  marketingEmails       Boolean   @default(true)
+  
+  // Address
+  city                  String?
+  district              String?
+  address               String?
+  latitude              Float?
+  longitude             Float?
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  lastLogin             DateTime?
+  
+  // Relations
+  listings              Listing[]
+  favorites             Favorite[]
+  chats                 Chat[]
+  messages              Message[]
+  reviews               Review[]
+  payments              Payment[]
+  notificationsReceived Notification[] @relation("UserNotifications")
+  reportsFiled          Report[]       @relation("ReporterReports")
+  reportsResolved       Report[]       @relation("ResolverReports")
+  
+  @@index([email])
+  @@index([googleId])
+  @@index([facebookId])
+}
+
+// User role enum
+enum UserRole {
+  USER
+  SELLER
+  ADMIN
+}
+
+// ==================== CATEGORY & LISTING MODELS ====================
+
+// Category model - Product categories
+model Category {
+  id                    String    @id @default(cuid())
+  name                  String    @unique
+  slug                  String    @unique
+  description           String?
+  image                 String?   // Cloudinary URL
+  icon                  String?
+  
+  // Status
+  isActive              Boolean   @default(true)
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  // Relations
+  listings              Listing[]
+  
+  @@index([slug])
+}
+
+// Listing model - Product/Ad listings
+model Listing {
+  id                    String    @id @default(cuid())
+  title                 String
+  slug                  String    @unique
+  description           String
+  category              Category  @relation(fields: [categoryId], references: [id])
+  categoryId            String
+  
+  // Pricing
+  price                 Float
+  negotiable            Boolean   @default(false)
+  
+  // Condition
+  condition             Condition @default(USED)
+  
+  // Location
+  city                  String
+  district              String
+  address               String?
+  latitude              Float?
+  longitude             Float?
+  
+  // Contact
+  sellerPhone           String?
+  sellerEmail           String?
+  
+  // Status
+  status                ListingStatus @default(ACTIVE)
+  featured              Boolean   @default(false)
+  boosted               Boolean   @default(false)
+  boostedUntil          DateTime?
+  
+  // Engagement
+  views                 Int       @default(0)
+  
+  // Expiry
+  expiresAt             DateTime
+  
+  // Images
+  images                ListingImage[]
+  
+  // Seller
+  seller                User      @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId              String
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  // Relations
+  favorites             Favorite[]
+  chats                 Chat[]
+  reviews               Review[]
+  payments              Payment[]
+  
+  @@index([categoryId])
+  @@index([sellerId])
+  @@index([status])
+  @@index([city])
+  @@index([slug])
+}
+
+// Listing condition enum
+enum Condition {
+  NEW
+  LIKE_NEW
+  GOOD
+  USED
+  NOT_WORKING
+}
+
+// Listing status enum
+enum ListingStatus {
+  ACTIVE
+  INACTIVE
+  SOLD
+  EXPIRED
+  DELETED
+  FLAGGED
+}
+
+// Listing image model - Multiple images per listing
+model ListingImage {
+  id                    String    @id @default(cuid())
+  url                   String    // Cloudinary URL
+  publicId              String    // For deletion
+  listing               Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId             String
+  
+  // Image order
+  position              Int
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  
+  @@unique([listingId, position])
+  @@index([listingId])
+}
+
+// ==================== CHAT & MESSAGE MODELS ====================
+
+// Chat model - Conversation between buyer and seller
+model Chat {
+  id                    String    @id @default(cuid())
+  
+  // Participants
+  buyer                 User      @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  buyerId               String
+  
+  listing               Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId             String
+  
+  // Status
+  isActive              Boolean   @default(true)
+  
+  // Last message
+  lastMessage           String?
+  lastMessageAt         DateTime?
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  // Relations
+  messages              Message[]
+  
+  @@unique([buyerId, listingId])
+  @@index([buyerId])
+  @@index([listingId])
+}
+
+// Message model - Individual messages in chat
+model Message {
+  id                    String    @id @default(cuid())
+  chat                  Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId                String
+  
+  // Message details
+  sender                User      @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  senderId              String
+  content               String
+  image                 String?   // Image URL for shared images
+  
+  // Message status
+  seen                  Boolean   @default(false)
+  seenAt                DateTime?
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  
+  @@index([chatId])
+  @@index([senderId])
+}
+
+// ==================== FAVORITE & REVIEW MODELS ====================
+
+// Favorite model - User's favorite listings
+model Favorite {
+  id                    String    @id @default(cuid())
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String
+  listing               Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId             String
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@index([listingId])
+}
+
+// Review model - User reviews
+model Review {
+  id                    String    @id @default(cuid())
+  reviewer              User      @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewerId            String
+  listing               Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId             String
+  
+  // Review content
+  rating                Int       // 1-5 stars
+  comment               String?
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  @@unique([reviewerId, listingId])
+  @@index([reviewerId])
+  @@index([listingId])
+}
+
+// ==================== PAYMENT & TRANSACTION MODELS ====================
+
+// Payment model - Payment transactions
+model Payment {
+  id                    String    @id @default(cuid())
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String
+  listing               Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId             String
+  
+  // Payment details
+  amount                Float
+  currency              String    @default("NPR")
+  paymentMethod         PaymentMethod
+  paymentGateway        PaymentGateway
+  
+  // Transaction IDs
+  transactionId         String?   @unique
+  gatewayTransactionId  String?
+  
+  // Status
+  status                PaymentStatus @default(PENDING)
+  
+  // Purpose
+  purpose               PaymentPurpose @default(FEATURED)
+  
+  // Metadata
+  metadata              Json?
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  paidAt                DateTime?
+  
+  @@index([userId])
+  @@index([listingId])
+  @@index([status])
+}
+
+// Payment method enum
+enum PaymentMethod {
+  KHALTI
+  ESEWA
+  STRIPE
+  BANK_TRANSFER
+}
+
+// Payment gateway enum
+enum PaymentGateway {
+  KHALTI
+  ESEWA
+  STRIPE
+}
+
+// Payment status enum
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+// Payment purpose enum
+enum PaymentPurpose {
+  FEATURED
+  BOOSTED
+  SUBSCRIPTION
+  PROMOTION
+}
+
+// ==================== NOTIFICATION MODEL ====================
+
+// Notification model - User notifications
+model Notification {
+  id                    String    @id @default(cuid())
+  user                  User      @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  userId                String
+  
+  // Notification details
+  title                 String
+  message               String
+  type                  NotificationType
+  
+  // Link to entity
+  entityType            String?
+  entityId              String?
+  
+  // Status
+  isRead                Boolean   @default(false)
+  readAt                DateTime?
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([isRead])
+}
+
+// Notification type enum
+enum NotificationType {
+  MESSAGE
+  LISTING_APPROVAL
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  FAVORITE_ALERT
+  NEW_OFFER
+  REVIEW
+  ACCOUNT
+  SYSTEM
+}
+
+// ==================== ADMIN & REPORT MODELS ====================
+
+// Report model - User/Listing reports
+model Report {
+  id                    String    @id @default(cuid())
+  reporter              User      @relation("ReporterReports", fields: [reporterId], references: [id], onDelete: Cascade)
+  reporterId            String
+  
+  // Reported entity
+  targetType            String    // "USER", "LISTING"
+  targetId              String
+  
+  // Report details
+  reason                String
+  description           String?
+  
+  // Status
+  status                ReportStatus @default(PENDING)
+  
+  // Admin action
+  resolvedBy            User?     @relation("ResolverReports", fields: [resolvedById], references: [id])
+  resolvedById          String?
+  resolution            String?
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  resolvedAt            DateTime?
+  
+  @@index([reporterId])
+  @@index([status])
+}
+
+// Report status enum
+enum ReportStatus {
+  PENDING
+  INVESTIGATING
+  RESOLVED
+  DISMISSED
+}
+
+// Analytics model - Track user actions
+model Analytics {
+  id                    String    @id @default(cuid())
+  
+  // Event details
+  event                 String    // "LISTING_VIEW", "LISTING_CREATED", etc.
+  userId                String?
+  listingId             String?
+  
+  // Event data
+  metadata              Json?
+  
+  // Timestamps
+  createdAt             DateTime  @default(now())
+  
+  @@index([event])
+  @@index([userId])
+  @@index([listingId])
+}

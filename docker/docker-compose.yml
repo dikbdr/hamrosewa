@@ -1,0 +1,108 @@
+# Docker Compose - Development & Production
+
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: hamrosewa-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-hamrosewa}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-hamrosewa123}
+      POSTGRES_DB: ${DB_NAME:-hamrosewa}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-hamrosewa}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hamrosewa-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: hamrosewa-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hamrosewa-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/Dockerfile.backend
+    container_name: hamrosewa-api
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgresql://${DB_USER:-hamrosewa}:${DB_PASSWORD:-hamrosewa123}@db:5432/${DB_NAME:-hamrosewa}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/app/src
+    networks:
+      - hamrosewa-network
+    command: npm run dev
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    container_name: hamrosewa-web
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:5000/api
+      NEXT_PUBLIC_SOCKET_URL: http://localhost:5000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src:/app/src
+    networks:
+      - hamrosewa-network
+    command: npm run dev
+
+  # Nginx Reverse Proxy (optional)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: hamrosewa-nginx
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #     - frontend
+  #     - backend
+  #   networks:
+  #     - hamrosewa-network
+
+volumes:
+  postgres_data:
+
+networks:
+  hamrosewa-network:
+    driver: bridge
