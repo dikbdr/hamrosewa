@@ -510,11 +510,23 @@ This project is built in 14 phases:
 
 1. **Phase 1**: Project Setup ✅
 2. **Phase 2**: Authentication Module
+
+   - See [PHASE_2_STEPS.md](PHASE_2_STEPS.md) for the full auth task list
 3. **Phase 3**: User Profile Module
-4. **Phase 4**: Category Module
+
+   - See [PHASE_3_STEPS.md](PHASE_3_STEPS.md) for the user profile plan
+4. **Phase 4**: Category Module ✅
+
+   - See [PHASE_4_STEPS.md](PHASE_4_STEPS.md) for the category plan
 5. **Phase 5**: Product/Listing Module
+
+   - See [PHASE_5_STEPS.md](PHASE_5_STEPS.md) for the listing plan
 6. **Phase 6**: Search & Filter Module
+
+   - See [PHASE_6_STEPS.md](PHASE_6_STEPS.md) for the search plan
 7. **Phase 7**: Chat System
+
+   - See [PHASE_7_STEPS.md](PHASE_7_STEPS.md) for the chat plan
 8. **Phase 8**: Payment Gateway Module
 9. **Phase 9**: Admin Panel
 10. **Phase 10**: Notifications Module
@@ -539,7 +551,15 @@ Phase 2 includes the full authentication flow and access control:
 - Add refresh token endpoint and token renewal flow
 - Create frontend auth service and integration with backend
 - Add client-side pages for login, register, verify email, and OAuth callback
+## 📌 Phase 3: User Profile Module
 
+Phase 3 builds the personal account experience for HamroSewa. It includes backend profile endpoints, secure password management, profile image upload, and a user dashboard with personal metrics.
+
+- Add authenticated profile CRUD endpoints
+- Add secure password change endpoint
+- Add profile photo upload support via Cloudinary
+- Build frontend `/profile` and `/dashboard` pages
+- Provide a user-facing dashboard with listings, favorites, chats, and messages summary
 ## �🤝 Contributing
 
 1. Fork the repository

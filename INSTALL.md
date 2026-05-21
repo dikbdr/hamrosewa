@@ -165,6 +165,18 @@ npm run db:generate
 npm run db:seed
 ```
 
+## Phase 2: Authentication Checklist
+
+For a complete Phase 2 implementation, follow the dedicated authentication checklist in `PHASE_2_STEPS.md`.
+
+- Implement backend auth endpoints
+- Add JWT and refresh token support
+- Add email verification
+- Add Google/Facebook OAuth
+- Create frontend login/register/verification pages
+
+See `PHASE_2_STEPS.md` for the detailed task list.
+
 ## Database Setup
 
 ### Understanding Prisma

@@ -3,8 +3,8 @@
   "compilerOptions": {
     "composite": true,
     "skipLibCheck": true,
-    "noEmit": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "noEmit": false
   },
   "include": ["next.config.js", "postcss.config.js"]
 }

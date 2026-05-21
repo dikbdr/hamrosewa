@@ -15,6 +15,11 @@ Complete guide to all documentation files for the HamroSewa marketplace project.
 - **Main guide**: [README.md](README.md)
 - **Phase 1 summary**: [PHASE_1_SUMMARY.md](PHASE_1_SUMMARY.md)
 - **Completion report**: [PHASE_1_COMPLETE.md](PHASE_1_COMPLETE.md)
+- **Phase 3 user profile tasks**: [PHASE_3_STEPS.md](PHASE_3_STEPS.md)
+- **Phase 4 category plan**: [PHASE_4_STEPS.md](PHASE_4_STEPS.md)
+- **Phase 5 listing plan**: [PHASE_5_STEPS.md](PHASE_5_STEPS.md)
+- **Phase 6 search plan**: [PHASE_6_STEPS.md](PHASE_6_STEPS.md)
+- **Phase 7 chat plan**: [PHASE_7_STEPS.md](PHASE_7_STEPS.md)
 
 ### For Development
 - **Backend**: [backend/src/index.ts](backend/src/index.ts)

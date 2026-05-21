@@ -9,8 +9,6 @@
  * - Call to action
  */
 
-import React from 'react';
-
 /**
  * Home Component
  * 

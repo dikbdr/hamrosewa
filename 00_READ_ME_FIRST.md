@@ -67,12 +67,21 @@ Your complete **HamroSewa Marketplace Platform** for Nepal is now ready!
 2. Explore code structure
 3. Configure VS Code
 4. Understand architecture
+5. Review **[PHASE_2_STEPS.md](PHASE_2_STEPS.md)** for the authentication plan
 
 ### Next Week:
 1. Start **Phase 2: Authentication**
 2. Implement user registration
 3. Build login system
 4. Test everything
+
+---
+
+### Following Week:
+1. Start **Phase 4: Categories & Listings**
+2. Define category data model
+3. Build category browsing and admin tools
+4. Prepare for listing creation
 
 ---
 
@@ -174,11 +183,11 @@ Before starting Phase 2, verify:
 TODAY          → Setup complete ✅
 TOMORROW       → Read documentation
 THIS WEEK      → Phase 2: Authentication
-NEXT WEEK      → User profiles
-2 WEEKS OUT    → Categories & Listings
-3 WEEKS OUT    → Search & Chat
-4 WEEKS OUT    → Payments
-5 WEEKS OUT    → Admin panel
+NEXT WEEK      → Phase 5: Listings
+2 WEEKS OUT    → Search & Chat
+3 WEEKS OUT    → Payments
+4 WEEKS OUT    → Admin panel
+5 WEEKS OUT    → Notifications
 6 WEEKS OUT    → Polish & Deploy
 ```
 

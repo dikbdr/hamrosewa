@@ -418,10 +418,10 @@ A: Check [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) for help.
 | Milestone | Timeline |
 |-----------|----------|
 | ✅ Phase 1: Setup | Complete |
-| ⏳ Phase 2: Authentication | Next |
-| ⏳ Phase 3: User Profiles | 1 week |
-| ⏳ Phase 4: Categories | 1.5 weeks |
-| ⏳ Phase 5: Listings | 2 weeks |
+| ✅ Phase 2: Authentication | Complete |
+| ✅ Phase 3: User Profiles | Complete |
+| ✅ Phase 4: Categories | Complete |
+| ⏳ Phase 5: Listings | Next |
 | ⏳ Phase 6: Search | 2.5 weeks |
 | ⏳ Phase 7: Chat | 3 weeks |
 | ⏳ Phase 8: Payments | 4 weeks |

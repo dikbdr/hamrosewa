@@ -20,6 +20,10 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import passport from 'passport';
 import authRoutes from './routes/authRoutes';
+import userRoutes from './routes/userRoutes';
+import categoryRoutes from './routes/categoryRoutes';
+import listingRoutes from './routes/listingRoutes';
+import chatRoutes from './routes/chatRoutes';
 import { initializePassport } from './config/passport';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
@@ -46,6 +50,8 @@ const io = new SocketIOServer(httpServer, {
     methods: ['GET', 'POST'],
   },
 });
+
+app.set('io', io);
 
 // ==================== MIDDLEWARE SETUP ====================
 
@@ -117,8 +123,10 @@ app.get('/health', (_req: Request, res: Response) => {
  * - Payments: /api/payments
  */
 app.use('/api/auth', authRoutes);
-// app.use('/api/users', userRoutes);
-// app.use('/api/listings', listingRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/listings', listingRoutes);
+app.use('/api/chats', chatRoutes);
 
 // ==================== SOCKET.IO SETUP ====================
 
@@ -129,12 +137,17 @@ app.use('/api/auth', authRoutes);
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  // Handle disconnect
+  socket.on('join-chat', (chatId: string) => {
+    socket.join(chatId);
+  });
+
+  socket.on('leave-chat', (chatId: string) => {
+    socket.leave(chatId);
+  });
+
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
   });
-
-  // TODO: Add chat events, notifications, etc.
 });
 
 // ==================== ERROR HANDLING ====================
