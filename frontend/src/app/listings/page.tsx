@@ -1,7 +1,7 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { fetchListings } from '@/services/listingService';
 
 type ListingPayload = {
@@ -26,13 +26,13 @@ export default function ListingsPage() {
   const [listings, setListings] = useState<ListingPayload[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     const loadListings = async () => {
       try {
-        const category = searchParams.get('category') || undefined;
-        const search = searchParams.get('search') || undefined;
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const category = urlSearchParams.get('category') || undefined;
+        const search = urlSearchParams.get('search') || undefined;
         const response = await fetchListings({ category, search });
         setListings(response.data.data);
       } catch (err: any) {
@@ -43,7 +43,7 @@ export default function ListingsPage() {
     };
 
     loadListings();
-  }, [searchParams]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-light to-white py-10 px-4">
@@ -93,7 +93,9 @@ export default function ListingsPage() {
                   </div>
                   <div className="space-y-3">
                     <div>
-                      <h2 className="text-xl font-semibold">{listing.title}</h2>
+                      <Link href={`/listings/${listing.id}`} className="text-xl font-semibold text-slate-900 hover:text-primary transition">
+                        {listing.title}
+                      </Link>
                       <p className="text-sm text-gray-500">{listing.category?.name || 'Uncategorized'}</p>
                     </div>
                     <p className="text-lg font-semibold text-primary">Rs {listing.price.toFixed(0)}</p>

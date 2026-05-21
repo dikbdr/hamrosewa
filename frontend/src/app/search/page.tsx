@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState, type FormEvent } from 'react';
 import { fetchCategories } from '@/services/categoryService';
 import { fetchListings, ListingSearchFilters } from '@/services/listingService';
@@ -36,16 +37,21 @@ export default function SearchPage() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const loadListings = async (searchFilters: ListingSearchFilters = {}) => {
+    try {
+      const response = await fetchListings(searchFilters);
+      setListings(response.data.data);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Unable to load listings.');
+    }
+  };
+
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [categoryResponse, listingResponse] = await Promise.all([
-          fetchCategories(),
-          fetchListings(),
-        ]);
-
+        const categoryResponse = await fetchCategories();
         setCategories(categoryResponse.data.data);
-        setListings(listingResponse.data.data);
+        await loadListings();
       } catch (err: any) {
         setError(err?.response?.data?.message || 'Unable to load search results.');
       } finally {
@@ -62,8 +68,7 @@ export default function SearchPage() {
     setError(null);
 
     try {
-      const response = await fetchListings(filters);
-      setListings(response.data.data);
+      await loadListings(filters);
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Failed to apply search filters.');
     } finally {
@@ -195,12 +200,27 @@ export default function SearchPage() {
                 <span className="text-sm">Featured only</span>
               </label>
 
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-primary px-4 py-3 text-white font-semibold hover:bg-orange-500 transition"
-              >
-                {searchLoading ? 'Searching...' : 'Search listings'}
-              </button>
+              <div className="space-y-3">
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-primary px-4 py-3 text-white font-semibold hover:bg-orange-500 transition"
+                >
+                  {searchLoading ? 'Searching...' : 'Search listings'}
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setFilters({});
+                    setSearchLoading(true);
+                    setError(null);
+                    await loadListings();
+                    setSearchLoading(false);
+                  }}
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Clear filters
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -231,7 +251,9 @@ export default function SearchPage() {
                   </div>
                   <div className="space-y-3">
                     <div>
-                      <h2 className="text-xl font-semibold">{listing.title}</h2>
+                      <Link href={`/listings/${listing.id}`} className="text-xl font-semibold text-slate-900 hover:text-primary transition">
+                        {listing.title}
+                      </Link>
                       <p className="text-sm text-gray-500">{listing.category?.name || 'Uncategorized'}</p>
                     </div>
                     <p className="text-lg font-semibold text-primary">Rs {listing.price.toFixed(0)}</p>

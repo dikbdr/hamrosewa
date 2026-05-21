@@ -17,6 +17,8 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import '@/styles/globals.css';
+import Header from '@/components/Header';
+import NotificationListener from '@/components/NotificationListener';
 
 /**
  * Metadata for SEO
@@ -63,8 +65,10 @@ export default function RootLayout({
       <body className="bg-light text-dark">
         {/* Providers wrapper - will add context providers here later */}
         <div className="min-h-screen flex flex-col">
+          <Header />
           {/* Main content area */}
           <main className="flex-1">{children}</main>
+          <NotificationListener />
 
           {/* Footer will go here */}
         </div>

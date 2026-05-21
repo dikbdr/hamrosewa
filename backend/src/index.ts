@@ -24,6 +24,9 @@ import userRoutes from './routes/userRoutes';
 import categoryRoutes from './routes/categoryRoutes';
 import listingRoutes from './routes/listingRoutes';
 import chatRoutes from './routes/chatRoutes';
+import paymentRoutes from './routes/paymentRoutes';
+import notificationRoutes from './routes/notificationRoutes';
+import adminRoutes from './routes/adminRoutes';
 import { initializePassport } from './config/passport';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
@@ -127,6 +130,9 @@ app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/chats', chatRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
 
 // ==================== SOCKET.IO SETUP ====================
 
@@ -136,6 +142,10 @@ app.use('/api/chats', chatRoutes);
  */
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
+
+  socket.on('join-user', (userId: string) => {
+    socket.join(userId);
+  });
 
   socket.on('join-chat', (chatId: string) => {
     socket.join(chatId);

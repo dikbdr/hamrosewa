@@ -528,12 +528,26 @@ This project is built in 14 phases:
 
    - See [PHASE_7_STEPS.md](PHASE_7_STEPS.md) for the chat plan
 8. **Phase 8**: Payment Gateway Module
+
+   - See [PHASE_8_STEPS.md](PHASE_8_STEPS.md) for the payment plan
 9. **Phase 9**: Admin Panel
+
+   - See [PHASE_9_STEPS.md](PHASE_9_STEPS.md) for the admin plan
 10. **Phase 10**: Notifications Module
+
+   - See [PHASE_10_STEPS.md](PHASE_10_STEPS.md) for the notification plan
 11. **Phase 11**: Security
+
+   - See [PHASE_11_STEPS.md](PHASE_11_STEPS.md) for the security plan
 12. **Phase 12**: SEO & Performance
+
+   - See [PHASE_12_STEPS.md](PHASE_12_STEPS.md) for the SEO and performance plan
 13. **Phase 13**: Testing
+
+   - See [PHASE_13_STEPS.md](PHASE_13_STEPS.md) for the testing plan
 14. **Phase 14**: Deployment
+
+   - See [PHASE_14_STEPS.md](PHASE_14_STEPS.md) for the deployment plan
 
 ## � Phase 2: Authentication Module
 

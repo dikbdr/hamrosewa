@@ -19,6 +19,7 @@ This document describes the Phase 7 Chat System for HamroSewa.
 - [x] Add chat list page at `/chat`
 - [x] Add chat room page at `/chat/[id]`
 - [x] Add navigation from dashboard to chats
+- [x] Validate frontend chat routing and build
 - [x] Update README and documentation index
 
 ## Chat Endpoints

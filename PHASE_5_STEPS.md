@@ -18,6 +18,7 @@ This document describes the Phase 5 Product/Listing Module for HamroSewa.
 - [x] Add authenticated listing create/update/delete endpoints
 - [x] Register `/api/listings` route in backend
 - [x] Create frontend listing browse page
+- [x] Create frontend listing detail page
 - [x] Create frontend admin listing management page
 - [x] Add listing service methods in frontend
 - [x] Update documentation with Phase 5 details

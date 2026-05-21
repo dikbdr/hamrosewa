@@ -6,7 +6,8 @@ import { createSocket, fetchChat, sendChatMessage, markChatAsRead } from '@/serv
 import type { ChatPayload, ChatMessagePayload } from '@/services/chatService';
 
 export default function ChatRoomPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id ? (Array.isArray(params.id) ? params.id[0] : params.id) : null;
   const router = useRouter();
   const [chat, setChat] = useState<ChatPayload | null>(null);
   const [message, setMessage] = useState('');

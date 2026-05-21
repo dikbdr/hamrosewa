@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { fetchCategories } from '@/services/categoryService';
 
@@ -77,6 +78,14 @@ export default function CategoriesPage() {
                   {category.image && (
                     <img src={category.image} alt={category.name} className="h-44 w-full rounded-3xl object-cover" />
                   )}
+                  <div className="mt-6">
+                    <Link
+                      href={`/categories/${encodeURIComponent(category.slug)}`}
+                      className="inline-flex items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-orange-500 transition"
+                    >
+                      View category
+                    </Link>
+                  </div>
                 </article>
               ))
             )}

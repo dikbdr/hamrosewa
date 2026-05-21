@@ -23,6 +23,10 @@ export const fetchCategories = async () => {
   return api.get<{ data: CategoryPayload[] }>('/categories');
 };
 
+export const fetchCategory = async (categoryIdentifier: string) => {
+  return api.get<{ data: CategoryPayload }>(`/categories/${encodeURIComponent(categoryIdentifier)}`);
+};
+
 export const createCategory = async (token: string, payload: {
   name: string;
   description?: string;

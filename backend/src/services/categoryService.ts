@@ -31,9 +31,14 @@ export const listCategories = async (includeInactive = false) => {
   });
 };
 
-export const getCategoryById = async (categoryId: string) => {
-  const category = await prisma.category.findUnique({
-    where: { id: categoryId },
+export const getCategoryByIdentifier = async (categoryIdentifier: string) => {
+  const category = await prisma.category.findFirst({
+    where: {
+      OR: [
+        { id: categoryIdentifier },
+        { slug: categoryIdentifier },
+      ],
+    },
   });
 
   if (!category) {

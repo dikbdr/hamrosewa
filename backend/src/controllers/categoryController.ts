@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import {
   listCategories,
-  getCategoryById,
+  getCategoryByIdentifier,
   createCategory,
   updateCategory,
   deleteCategory,
@@ -19,7 +19,7 @@ export const getCategories = async (_req: Request, res: Response, next: NextFunc
 export const getCategory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const category = await getCategoryById(id);
+    const category = await getCategoryByIdentifier(id);
     res.status(200).json({ success: true, data: category });
   } catch (error) {
     next(error);

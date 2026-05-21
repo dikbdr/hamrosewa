@@ -20,6 +20,13 @@ Complete guide to all documentation files for the HamroSewa marketplace project.
 - **Phase 5 listing plan**: [PHASE_5_STEPS.md](PHASE_5_STEPS.md)
 - **Phase 6 search plan**: [PHASE_6_STEPS.md](PHASE_6_STEPS.md)
 - **Phase 7 chat plan**: [PHASE_7_STEPS.md](PHASE_7_STEPS.md)
+- **Phase 8 payment plan**: [PHASE_8_STEPS.md](PHASE_8_STEPS.md)
+- **Phase 9 admin plan**: [PHASE_9_STEPS.md](PHASE_9_STEPS.md)
+- **Phase 10 notifications plan**: [PHASE_10_STEPS.md](PHASE_10_STEPS.md)
+- **Phase 11 security plan**: [PHASE_11_STEPS.md](PHASE_11_STEPS.md)
+- **Phase 12 SEO & performance plan**: [PHASE_12_STEPS.md](PHASE_12_STEPS.md)
+- **Phase 13 testing plan**: [PHASE_13_STEPS.md](PHASE_13_STEPS.md)
+- **Phase 14 deployment plan**: [PHASE_14_STEPS.md](PHASE_14_STEPS.md)
 
 ### For Development
 - **Backend**: [backend/src/index.ts](backend/src/index.ts)

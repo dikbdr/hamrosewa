@@ -421,10 +421,10 @@ A: Check [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) for help.
 | ✅ Phase 2: Authentication | Complete |
 | ✅ Phase 3: User Profiles | Complete |
 | ✅ Phase 4: Categories | Complete |
-| ⏳ Phase 5: Listings | Next |
-| ⏳ Phase 6: Search | 2.5 weeks |
-| ⏳ Phase 7: Chat | 3 weeks |
-| ⏳ Phase 8: Payments | 4 weeks |
+| ✅ Phase 5: Listings | Complete |
+| ✅ Phase 6: Search | Complete |
+| ✅ Phase 7: Chat | Complete |
+| ✅ Phase 8: Payments | Complete |
 | ⏳ Phase 9: Admin | 5 weeks |
 | ⏳ Phase 10-14: Final | 6 weeks |
 
