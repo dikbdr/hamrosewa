@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { fetchNotifications, markNotificationRead, sendUserNotification } from '../services/notificationService';
+import { auditLog } from '../utils/auditLogger';
 
 export const getNotifications = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -30,6 +31,7 @@ export const sendNotification = async (req: Request, res: Response, next: NextFu
     }
 
     const notification = await sendUserNotification({ userId, title, message, type, entityType, entityId });
+    auditLog('notification.send', { userId, title, type, entityType, entityId });
     const io = req.app.get('io');
     if (io && notification) {
       io.to(userId).emit('notification', notification);

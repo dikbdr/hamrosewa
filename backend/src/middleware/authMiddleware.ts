@@ -12,7 +12,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
   const token = header.replace('Bearer ', '');
   try {
-    const payload = jwt.verify(token, jwtSecret) as { userId: string; role: string };
+    const payload = jwt.verify(token, jwtSecret, { algorithms: ['HS256'] }) as { userId: string; role: string };
     const user = await prisma.user.findUnique({ where: { id: payload.userId } });
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid token' });

@@ -6,12 +6,36 @@ import {
   verifyEmailToken,
   refreshAuthToken,
   findOrCreateOAuthUser,
+  storeRefreshToken,
+  revokeRefreshTokenByToken,
 } from '../services/authService';
+import { auditLog } from '../utils/auditLogger';
+
+const parseCookies = (cookieHeader?: string) => {
+  return (cookieHeader || '')
+    .split(';')
+    .map((cookie) => cookie.trim())
+    .filter(Boolean)
+    .reduce<Record<string, string>>((acc, cookie) => {
+      const [name, ...rest] = cookie.split('=');
+      acc[name] = decodeURIComponent(rest.join('='));
+      return acc;
+    }, {});
+};
+
+const cookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+  path: '/',
+});
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password, firstName, lastName } = req.body;
     const user = await registerUser({ email, password, firstName, lastName });
+    auditLog('user.register', { userId: user.id, email: user.email });
 
     res.status(201).json({
       success: true,
@@ -36,7 +60,10 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const { email, password } = req.body;
     const user = await authenticateUser(email, password);
     const tokens = generateTokens(user.id, user.role);
+    await storeRefreshToken(user.id, tokens.refreshToken);
+    auditLog('user.login', { userId: user.id, email: user.email });
 
+    res.cookie('refreshToken', tokens.refreshToken, cookieOptions());
     res.status(200).json({
       success: true,
       message: 'Login successful',
@@ -48,7 +75,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
           lastName: user.lastName,
           role: user.role,
         },
-        tokens,
+        accessToken: tokens.accessToken,
       },
     });
   } catch (error) {
@@ -73,13 +100,42 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
 
 export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { refreshToken: token } = req.body;
+    const bodyToken = req.body?.refreshToken;
+    const cookies = parseCookies(req.headers.cookie);
+    const token = bodyToken || cookies.refreshToken;
+
     if (!token) {
       return res.status(400).json({ success: false, message: 'Refresh token is required' });
     }
 
-    const accessToken = await refreshAuthToken(token);
-    res.status(200).json({ success: true, accessToken });
+    const tokens = await refreshAuthToken(token);
+    auditLog('user.refresh', { success: true });
+    res.cookie('refreshToken', tokens.refreshToken, cookieOptions());
+    res.status(200).json({ success: true, accessToken: tokens.accessToken });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logout = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const bodyToken = req.body?.refreshToken;
+    const cookies = parseCookies(req.headers.cookie);
+    const token = bodyToken || cookies.refreshToken;
+
+    if (token) {
+      await revokeRefreshTokenByToken(token);
+    }
+
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    });
+
+    auditLog('user.logout', { success: true });
+    res.status(200).json({ success: true, message: 'Logged out successfully' });
   } catch (error) {
     next(error);
   }
@@ -102,8 +158,10 @@ export const oauthCallback = async (req: Request, res: Response, next: NextFunct
     }
 
     const tokens = generateTokens(user.id, user.role);
+    await storeRefreshToken(user.id, tokens.refreshToken);
+    res.cookie('refreshToken', tokens.refreshToken, cookieOptions());
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const callbackUrl = `${frontendUrl}/auth/callback?token=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`;
+    const callbackUrl = `${frontendUrl}/auth/callback?token=${tokens.accessToken}`;
 
     res.redirect(callbackUrl);
   } catch (error) {

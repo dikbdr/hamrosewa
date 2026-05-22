@@ -6,6 +6,7 @@ import {
   updateUserRole,
   moderateListingStatus,
 } from '../services/adminService';
+import { auditLog } from '../utils/auditLogger';
 
 export const getAdminOverview = async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -38,10 +39,12 @@ export const changeUserRole = async (req: Request, res: Response, next: NextFunc
   try {
     const { id } = req.params;
     const { role } = req.body;
+    const admin = (req as any).user;
     if (!role) {
       return res.status(400).json({ success: false, message: 'Role is required' });
     }
     const user = await updateUserRole(id, role);
+    auditLog('admin.changeUserRole', { adminId: admin.id, targetUserId: id, role });
     res.status(200).json({ success: true, data: user });
   } catch (error) {
     next(error);
@@ -52,10 +55,12 @@ export const reviewListing = async (req: Request, res: Response, next: NextFunct
   try {
     const { id } = req.params;
     const { status } = req.body;
+    const admin = (req as any).user;
     if (!status) {
       return res.status(400).json({ success: false, message: 'Status is required' });
     }
     const listing = await moderateListingStatus(id, status);
+    auditLog('admin.reviewListing', { adminId: admin.id, listingId: id, status });
     res.status(200).json({ success: true, data: listing });
   } catch (error) {
     next(error);

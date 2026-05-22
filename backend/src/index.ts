@@ -47,9 +47,10 @@ app.use(passport.initialize());
 const httpServer = createServer(app);
 
 // Initialize Socket.IO for real-time communication
+const frontendOrigin = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+    origin: frontendOrigin,
     methods: ['GET', 'POST'],
   },
 });
@@ -64,9 +65,10 @@ app.set('io', io);
  * - cors: Allows cross-origin requests from frontend
  */
 app.use(helmet());
+
 app.use(
   cors({
-    origin: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+    origin: frontendOrigin,
     credentials: true,
   })
 );

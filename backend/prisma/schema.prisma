@@ -26,6 +26,10 @@ model User {
   // Authentication
   emailVerified         Boolean   @default(false)
   emailVerificationToken String?
+  refreshToken          String?
+  refreshTokenExpiry    DateTime?
+  failedLoginAttempts   Int       @default(0)
+  lockoutUntil          DateTime?
   
   // OAuth
   googleId              String?   @unique
